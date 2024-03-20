@@ -23,10 +23,8 @@ Figures: (a-f) Infiltration in double-textured soil due to excess supply of wate
 
 ## Citation
 [1] Shadab, M.A. and Hesse, M.A., 2022. Analysis of Gravity‐Driven Infiltration With the Development of a Saturated Region. Water Resources Research, 58(11), p.e2022WR032963.
-
 [2] Shadab, M., Hiatt, E., Hesse, M., 2023. Investigating groundwater dynamics and residence times on early mars using unconfined
 aquifer model with vertical heterogeneity. LPI Contributions 2806, 1736.
-
 [3] Shadab, M.A., Hiatt, E., Hesse, M.A., 202X. Investigating groundwater dynamics and residence times on early mars using
 unconfined aquifer model with vertical heterogeneity. (under preparation) .
 
