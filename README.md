@@ -1,12 +1,5 @@
 # Infiltration on early Mars
 
-<p align="center">
-<img src="./Figures/Cover.png" height="370">
-</p>
-Figure : Schematic showing gravity-driven infiltration in a soil with porosity ϕ decay with depth. The colors blue, brown, white refer to water, soil and gas respectively. A fully saturated region Ω(t) develops within an otherwise unsaturated domain. The saturated-unsaturated region boundary ∂Ω(t) has a boundary condition of water-gas pressure equivalence. The saturated region expands with time as the boundary ∂Ω(t) moves in outward direction.
-
-# Infiltration on early Mars
-
 ## Authors
 - Mohammad Afzal Shadab (mashadab@utexas.edu)
 - Eric Hiatt
@@ -19,8 +12,14 @@ Figure : Schematic showing gravity-driven infiltration in a soil with porosity �
 Oden Institute for Computational Engineering and Sciences / Jackson School of Geosciences / University of Texas Institute for Geophysics
 The University of Texas at Austin
 
-## 5-line Summary
+## 4-line Summary
 The codes provide the analytical solutions for infiltration in soils with two-layer and power-law porosity decay profiles on early Mars. The results have been validated with numerical solver and Hydrus simulations. The codes given correspond to the figures from the research paper. Lastly, we provide results for infiltration on the southern highlands in presence of a global groundwater table.
+
+<p align="center">
+<img src="./Figures/Cover.png" height="370">
+</p>
+Figures: (a-f) Infiltration in double-textured soil due to excess supply of water. (g) Evolution of dimensionless infiltration rate I/fc (or transmission loss). The volume fraction `φ_α` is the volume ratio of each phase α: gas (g), water (w), and soil (s).
+
 
 ## Citation
 [1] Shadab, M.A. and Hesse, M.A., 2022. Analysis of Gravity‐Driven Infiltration With the Development of a Saturated Region. Water Resources Research, 58(11), p.e2022WR032963.
