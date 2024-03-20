@@ -1,1 +1,46 @@
-# Infiltration-on-early-Mars
+# Infiltration on early Mars
+
+<p align="center">
+<img src="./Figures/Cover.png" height="370">
+</p>
+Figure : Schematic showing gravity-driven infiltration in a soil with porosity ϕ decay with depth. The colors blue, brown, white refer to water, soil and gas respectively. A fully saturated region Ω(t) develops within an otherwise unsaturated domain. The saturated-unsaturated region boundary ∂Ω(t) has a boundary condition of water-gas pressure equivalence. The saturated region expands with time as the boundary ∂Ω(t) moves in outward direction.
+
+# Infiltration on early Mars
+
+## Authors
+- Mohammad Afzal Shadab (mashadab@utexas.edu)
+- Eric Hiatt
+- Rickbir Singh Bahia
+- Eleni V. Bohacek
+- Vilmos Steinmann
+- Marc Andre Hesse (mhesse@jsg.utexas.edu)
+
+## Corresponding author affiliations (Email provided)
+Oden Institute for Computational Engineering and Sciences / Jackson School of Geosciences / University of Texas Institute for Geophysics
+The University of Texas at Austin
+
+## 5-line Summary
+The codes provide the analytical solutions for infiltration in soils with two-layer and power-law porosity decay profiles on early Mars. The results have been validated with numerical solver and Hydrus simulations. The codes given correspond to the figures from the research paper. Lastly, we provide results for infiltration on the southern highlands in presence of a global groundwater table.
+
+## Citation
+[1] Shadab, M.A. and Hesse, M.A., 2022. Analysis of Gravity‐Driven Infiltration With the Development of a Saturated Region. Water Resources Research, 58(11), p.e2022WR032963.
+[2] Shadab, M., Hiatt, E., Hesse, M., 2023. Investigating groundwater dynamics and residence times on early mars using unconfined
+aquifer model with vertical heterogeneity. LPI Contributions 2806, 1736.
+[3] Shadab, M.A., Hiatt, E., Hesse, M.A., 202X. Investigating groundwater dynamics and residence times on early mars using
+unconfined aquifer model with vertical heterogeneity. (under preparation) .
+
+## Getting Started
+### Dependences
+The python codes for Figures 1 and 2 require the following packages to function:
+- [Python](https://www.python.org/) version 3.5+
+- [Numpy](http://www.numpy.org/) >= 1.16
+- [scipy](https://www.scipy.org/) >=1.5
+- [matplotlib](https://matplotlib.org/) >=3.3.4
+
+Figure 3 is obtained from MATLAB.
+
+### Quick Usage
+After cloning the repository and installing the required libraries, run the python files corresponding to the figure numbers as given in the paper. Codes can be run either directly or on an IDE such as Anaconda Spyder. The resulting plots are collected in the folder `Figures`. MATLAB codes be run directly.
+
+### Non-dimensionalization
+The depth coordinate `z` is scaled with characteristic length `z_0`, time is scaled with characteristic time `z_0/f_c` and infiltration rate `I(t)` (or volumetric flux) is scaled with the infiltration capacity `f_c`. Therefore, the dimensionless variables are `z'=z/z_0`, `t'=tf_c/z_0`, and $`f'=I(t)/f_c`$.
