@@ -25,6 +25,9 @@ brown  = [155/255 ,  118/255 ,  83/255]
 tan    = [199/255 , 178/255 , 153/255]
 gray   = [100/255 , 100/255 , 100/255]
 
+yr2s = 365.25 * 24 * 60 * 60
+day2s= 24 * 60 * 60
+
 #############################################################
 #Classes used
 #############################################################
@@ -118,6 +121,122 @@ def time_sequenced_figure(zbottom,zsurface,xlim_min,xlim_max,t_interest):
     ax2.set_title(r'%.3f'%t_interest[1], fontsize='medium')
     ax4.set_title(r'%.3f'%t_interest[3], fontsize='medium')
     ax6.set_title(r'%.3f'%t_interest[5], fontsize='medium')
+    plt.subplots_adjust(wspace=0.25, hspace=0)
+    
+    return fig,([ax1,ax2,ax3,ax4,ax5,ax6]) 
+
+
+
+#############################################################
+#Plotting the time sequenced images dimensional
+#############################################################
+
+def time_sequenced_figure_dim(zbottom,zsurface,xlim_min,xlim_max,t_interest,fc_dim,z0_dim):
+
+    fig = plt.figure(figsize=(15,7.5) , dpi=100)
+    ax1 = fig.add_subplot(1, 6, 1)
+    ax2 = fig.add_subplot(1, 6, 2)
+    ax3 = fig.add_subplot(1, 6, 3)
+    ax4 = fig.add_subplot(1, 6, 4)
+    ax5 = fig.add_subplot(1, 6, 5)
+    ax6 = fig.add_subplot(1, 6, 6)
+    
+    t_dim = (z0_dim /fc_dim * t_interest)/yr2s
+    
+    ax1.set_ylabel(r'Dimensionless depth $z/z_0$', fontsize='medium')
+    ax1.set_ylim([zbottom,zsurface])
+    ax1.set_xlim([xlim_min,xlim_max])
+    
+    ax2.set_xlim([xlim_min,xlim_max])
+    ax2.set_ylim([zbottom,zsurface])
+    ax2.axes.yaxis.set_visible(False)
+    
+    fig.add_subplot(111, frame_on=False)
+    plt.tick_params(labelcolor="none", bottom=False, left=False)
+    
+    ax3.set_xlim([xlim_min,xlim_max])
+    ax3.axes.yaxis.set_visible(False)
+    ax3.set_ylim([zbottom,zsurface])
+    
+    ax4.set_xlim([xlim_min,xlim_max])
+    ax4.axes.yaxis.set_visible(False)
+    ax4.set_ylim([zbottom,zsurface])
+    
+    ax5.set_xlim([xlim_min,xlim_max])
+    ax5.axes.yaxis.set_visible(False)
+    ax5.set_ylim([zbottom,zsurface])
+    
+    ax6.set_xlim([xlim_min,xlim_max])
+    ax6.axes.yaxis.set_visible(False)
+    ax6.set_ylim([zbottom,zsurface])
+    
+    manager = plt.get_current_fig_manager()
+    manager.window.showMaximized()
+    
+    plt.yticks(fontsize='medium')
+    plt.xticks(fontsize='medium')
+    ax1.set_title(r"$t'=$%.2f" "\n" r"t[yr] = %.1f"%(t_interest[0],t_dim[0]), fontsize='medium')
+    ax2.set_title(r"%.2f" "\n" r"%.1f"%(t_interest[1],t_dim[1]), fontsize='medium')
+    ax4.set_title(r"%.2f" "\n" r"%.1f"%(t_interest[3],t_dim[3]), fontsize='medium')
+    ax6.set_title(r"%.2f" "\n" r"%.1f"%(t_interest[5],t_dim[5]), fontsize='medium')
+    plt.subplots_adjust(wspace=0.25, hspace=0)
+    
+    return fig,([ax1,ax2,ax3,ax4,ax5,ax6]) 
+
+
+
+#############################################################
+#Plotting the time sequenced images dimensional
+#############################################################
+
+def time_sequenced_figure_dim_days(zbottom,zsurface,xlim_min,xlim_max,t_interest,fc_dim,z0_dim):
+
+    fig = plt.figure(figsize=(15,7.5) , dpi=100)
+    ax1 = fig.add_subplot(1, 6, 1)
+    ax2 = fig.add_subplot(1, 6, 2)
+    ax3 = fig.add_subplot(1, 6, 3)
+    ax4 = fig.add_subplot(1, 6, 4)
+    ax5 = fig.add_subplot(1, 6, 5)
+    ax6 = fig.add_subplot(1, 6, 6)
+    
+    t_dim = (z0_dim /fc_dim * t_interest)/day2s
+    
+    ax1.set_ylabel(r'Dimensionless depth $z/z_0$', fontsize='medium')
+    ax1.set_ylim([zbottom,zsurface])
+    ax1.set_xlim([xlim_min,xlim_max])
+    
+    ax2.set_xlim([xlim_min,xlim_max])
+    ax2.set_ylim([zbottom,zsurface])
+    ax2.axes.yaxis.set_visible(False)
+    
+    fig.add_subplot(111, frame_on=False)
+    plt.tick_params(labelcolor="none", bottom=False, left=False)
+    
+    ax3.set_xlim([xlim_min,xlim_max])
+    ax3.axes.yaxis.set_visible(False)
+    ax3.set_ylim([zbottom,zsurface])
+    
+    ax4.set_xlim([xlim_min,xlim_max])
+    ax4.axes.yaxis.set_visible(False)
+    ax4.set_ylim([zbottom,zsurface])
+    
+    ax5.set_xlim([xlim_min,xlim_max])
+    ax5.axes.yaxis.set_visible(False)
+    ax5.set_ylim([zbottom,zsurface])
+    
+    ax6.set_xlim([xlim_min,xlim_max])
+    ax6.axes.yaxis.set_visible(False)
+    ax6.set_ylim([zbottom,zsurface])
+    
+    manager = plt.get_current_fig_manager()
+    manager.window.showMaximized()
+    
+    plt.yticks(fontsize='medium')
+    plt.xticks(fontsize='medium')
+    ax1.set_title(r"$t'=$%.2f" "\n" r"t[days] = %.1f"%(t_interest[0],t_dim[0]), fontsize='medium')
+    ax2.set_title(r"%.2f" "\n" r"%.1f"%(t_interest[1],t_dim[1]), fontsize='medium')
+    ax4.set_title(r"%.2f" "\n" r"%.1f"%(t_interest[3],t_dim[3]), fontsize='medium')
+    ax6.set_title(r"%.2f" "\n" r"%.1f"%(t_interest[5],t_dim[5]), fontsize='medium')
     plt.subplots_adjust(wspace=0.25, hspace=0)
     
     return fig,([ax1,ax2,ax3,ax4,ax5,ax6]) 

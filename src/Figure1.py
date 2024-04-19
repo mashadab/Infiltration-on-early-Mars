@@ -16,6 +16,17 @@ zsurface = 0    #dimensionless surface height
 z0 = 1.0         #dimensionless location of jump
 R = 0.999 #Array of dimensionless rainfall rates
 
+
+################################################
+#Dimensional values
+################################################
+fc_dim= 1e-5 #infiltration capacity [m/s]
+z0_dim = 10 #dune depth [m]
+day2s = 24 * 60 * 60
+yr2s = 24 * 60 * 60 * 365.25
+################################################
+
+
 #spatial discretization
 zbottom = 2
 Nz = 1000
@@ -28,7 +39,7 @@ tmax = 20   #time scaling with respect to z0/fc
 Nt   = 20000#time steps
 t = np.linspace(0,tmax,Nt+1) #time array
 #time stamps of interest: [beginning, stage1, stage2: just after saturation (ts), stage2, stage2: ponding time (tp), stage3]
-t_interest = [0,0.2,0.6249999999999999 +0.005,0.6,0.8,1.0]
+t_interest = np.array([0,0.2,0.6249999999999999 +0.005,0.6,0.8,1.0])
 
 ############################################################# 
 #Functions for two-layered soils
@@ -83,9 +94,9 @@ S_w_analy_int[zc>=xf] = theta_L/phi_L
 S_w_analy_int_combined = []
 S_w_analy_int_combined = S_w_analy_int.copy()
 
-ax1.fill_betweenx(zc,1, facecolor=red,label=r'$\phi_{gas}$')
-ax1.fill_betweenx(zc,(1-phi+phi*S_w_analy_int)[:,0], facecolor=blue,label=r'$\phi_{water}$')
-ax1.fill_betweenx(zc,(1-phi)[:,0], facecolor=brown,label=r'$\phi_{soil}$')
+ax1.fill_betweenx(zc,1, facecolor=red,label=r'$\phi_{g}$')
+ax1.fill_betweenx(zc,(1-phi+phi*S_w_analy_int)[:,0], facecolor=blue,label=r'$\phi_{w}$')
+ax1.fill_betweenx(zc,(1-phi)[:,0], facecolor=brown,label=r'$\phi_{s}$')
 
 xf = zsurface + Sf*t_interest[1]
 S_w_analy_int = (1-s_gr)*np.ones((Nz,1))
@@ -105,9 +116,9 @@ S_w_analy_int[zc>=res.y[1,0]+z0] = theta_L/phi_L
 
 S_w_analy_int_combined = np.hstack([S_w_analy_int_combined,S_w_analy_int])
 
-ax3.fill_betweenx(zc,1, facecolor=red,label=r'$\phi_{gas}$')
-ax3.fill_betweenx(zc,(1-phi+phi*S_w_analy_int)[:,0], facecolor=blue,label=r'$\phi_{water}$')
-ax3.fill_betweenx(zc,(1-phi)[:,0], facecolor=brown,label=r'$\phi_{soil}$')
+ax3.fill_betweenx(zc,1, facecolor=red,label=r'$\phi_{g}$')
+ax3.fill_betweenx(zc,(1-phi+phi*S_w_analy_int)[:,0], facecolor=blue,label=r'$\phi_{w}$')
+ax3.fill_betweenx(zc,(1-phi)[:,0], facecolor=brown,label=r'$\phi_{s}$')
 
 ytop = -1
 ybot = 0
@@ -154,9 +165,133 @@ ax6.fill_betweenx(zc,(1-phi)[:,0], facecolor=brown,label=r'$\phi_{soil}$')
 ax3.set_title(r'''%.2f'''%(ts+0.005), fontsize='medium')
 ax5.set_title(r'''%.2f'''%t_interest[4], fontsize='medium')
 ax1.legend(loc='lower left', shadow=False, fontsize='medium')
+
 plt.xlabel("Volume fractions $\phi$", fontsize='medium')
 plt.savefig(f"../Figures/{simulation_name}_CL{theta_U}CR{theta_L}_phiL{phi_U}phiR{phi_L}.pdf")
 
+
+
+print("############################################################# \n")
+print("2 (top) Volume fraction with depth with dimensions")
+print("############################################################# \n")
+
+# First set up the figure, the axis 
+fig,([ax1,ax2,ax3,ax4,ax5,ax6]) = time_sequenced_figure_dim_days(zbottom,zsurface,0,1,t_interest,fc_dim,z0_dim)
+
+#Relation (32) - (35) to find the shock speed ratio k
+aa = phi_U/phi_L*(1-theta_U/phi_U-s_gr)/(1-theta_L/phi_L-s_gr)*(1- f_Cm(np.array([phi_L]),m,phi_U) * f_Cn(np.array([theta_L]),np.array([phi_L]),s_gr,s_wr,n) / f_Cm(np.array([phi_U]),m,phi_U))
+bb =-phi_U/phi_L*(1-theta_U/phi_U-s_gr)/(1-theta_L/phi_L-s_gr)*(1- f_Cm(np.array([phi_L]),m,phi_U) * f_Cn(np.array([theta_L]),np.array([phi_L]),s_gr,s_wr,n) / f_Cm(np.array([phi_L]),m,phi_U)) - (1 - f_Cm(np.array([phi_U]),m,phi_U) * f_Cn(np.array([theta_U]),np.array([phi_U]),s_gr,s_wr,n) / f_Cm(np.array([phi_U]),m,phi_U))
+cc = 1 - f_Cm(np.array([phi_U]),m,phi_U) * f_Cn(np.array([theta_U]),np.array([phi_U]),s_gr,s_wr,n) / f_Cm(np.array([phi_L]),m,phi_U)
+k = (-bb-np.sqrt(bb**2-4*aa*cc))/(2*aa)
+
+#Calculating the shock speeds
+s_U_analy =((qs(k) - f_Cm(np.array([phi_U]),m,phi_U)*f_Cn(np.array([theta_U]),np.array([phi_U]),s_gr,s_wr,n))[0]/(phi_U*(1-s_gr-theta_U/phi_U)))
+s_L_analy =((qs(k) - f_Cm(np.array([phi_L]),m,phi_U)*f_Cn(np.array([theta_L]),np.array([phi_L]),s_gr,s_wr,n))[0]/(phi_L*(1-theta_L/phi_L-s_gr)))
+
+Sf = ((f_Cm(np.array([phi_U]),m,phi_U)[0]*f_Cn(np.array([theta_U]),np.array([phi_U]),s_gr,s_wr,n))[0] / (phi_U*(theta_U/phi_U - s_wr))) #initial front speed
+ts = (z0 - zsurface)/Sf             #dimensionless time of saturation
+tp = ts + (zsurface-z0)/s_U_analy   #dimensionless time of ponding
+
+xf = zsurface + Sf*t_interest[0]
+S_w_analy_int = (1-s_gr)*np.ones((Nz,1))
+S_w_analy_int[zc<=xf] = theta_U/phi_U
+S_w_analy_int[zc>=xf] = theta_L/phi_L
+
+S_w_analy_int_combined = []
+S_w_analy_int_combined = S_w_analy_int.copy()
+
+ax1new = ax1.twinx()
+ax1new.set_ylim([2,0])
+ax1new.set_yticks([])
+
+ax1.fill_betweenx(zc,1, facecolor=red,label=r'$\phi_{g}$')
+ax1.fill_betweenx(zc,(1-phi+phi*S_w_analy_int)[:,0], facecolor=blue,label=r'$\phi_{w}$')
+ax1.fill_betweenx(zc,(1-phi)[:,0], facecolor=brown,label=r'$\phi_{s}$')
+
+xf = zsurface + Sf*t_interest[1]
+S_w_analy_int = (1-s_gr)*np.ones((Nz,1))
+S_w_analy_int[zc<=xf] = theta_U/phi_U
+S_w_analy_int[zc>=xf] = theta_L/phi_L
+
+S_w_analy_int_combined = np.hstack([S_w_analy_int_combined,S_w_analy_int])
+
+ax2.fill_betweenx(zc,1, facecolor=red,label=r'$\phi_g$')
+ax2.fill_betweenx(zc,(1-phi+phi*S_w_analy_int)[:,0], facecolor=blue,label=r'$\phi_w$')
+ax2.fill_betweenx(zc,(1-phi)[:,0], facecolor=brown,label=r'$\phi_s$')
+
+res = solve_ivp(rhs_stage2, (0, 0.005), [-1e-14,1e-15],t_eval=[0.005])
+S_w_analy_int = (1-s_gr)*np.ones((Nz,1))
+S_w_analy_int[zc<=res.y[0,0]+z0] = theta_U/phi_U
+S_w_analy_int[zc>=res.y[1,0]+z0] = theta_L/phi_L
+
+S_w_analy_int_combined = np.hstack([S_w_analy_int_combined,S_w_analy_int])
+
+ax3.fill_betweenx(zc,1, facecolor=red,label=r'$\phi_{g}$')
+ax3.fill_betweenx(zc,(1-phi+phi*S_w_analy_int)[:,0], facecolor=blue,label=r'$\phi_{w}$')
+ax3.fill_betweenx(zc,(1-phi)[:,0], facecolor=brown,label=r'$\phi_{s}$')
+
+ytop = -1
+ybot = 0
+
+res = solve_ivp(rhs_stage3, (0, t_interest[3]-tp), [ytop,ybot],t_eval=[t_interest[3]-tp])
+S_w_analy_int = (1-s_gr)*np.ones((Nz,1))
+S_w_analy_int[zc<=res.y[0,0]+z0] = theta_U/phi_U
+S_w_analy_int[zc>=res.y[1,0]+z0] = theta_L/phi_L
+
+S_w_analy_int_combined = np.hstack([S_w_analy_int_combined,S_w_analy_int])
+
+ax4.fill_betweenx(zc,1, facecolor=red,label=r'$\phi_g$')
+ax4.fill_betweenx(zc,(1-phi+phi*S_w_analy_int)[:,0], facecolor=blue,label=r'$\phi_w$')
+ax4.fill_betweenx(zc,(1-phi)[:,0], facecolor=brown,label=r'$\phi_s$')
+
+ytop = -1
+ybot = 0
+
+res = solve_ivp(rhs_stage3, (0, t_interest[4]-tp), [ytop,ybot],t_eval=[t_interest[4]-tp])
+S_w_analy_int = (1-s_gr)*np.ones((Nz,1))
+S_w_analy_int[zc<=res.y[0,0]+z0] = theta_U/phi_U
+S_w_analy_int[zc>=res.y[1,0]+z0] = theta_L/phi_L
+
+S_w_analy_int_combined = np.hstack([S_w_analy_int_combined,S_w_analy_int])
+
+ax5.fill_betweenx(zc,1, facecolor=red,label=r'$\phi_{gas}$')
+ax5.fill_betweenx(zc,(1-phi+phi*S_w_analy_int)[:,0], facecolor=blue,label=r'$\phi_{water}$')
+ax5.fill_betweenx(zc,(1-phi)[:,0], facecolor=brown,label=r'$\phi_{soil}$')
+
+ytop = -1
+ybot = 0
+
+res = solve_ivp(rhs_stage3, (0, t_interest[5]-tp), [ytop,ybot],t_eval=[t_interest[5]-tp])
+S_w_analy_int = (1-s_gr)*np.ones((Nz,1))
+S_w_analy_int[zc<=res.y[0,0]+z0] = theta_U/phi_U
+S_w_analy_int[zc>=res.y[1,0]+z0] = theta_L/phi_L
+
+S_w_analy_int_combined = np.hstack([S_w_analy_int_combined,S_w_analy_int])
+
+ax6.fill_betweenx(zc,1, facecolor=red,label=r'$\phi_{gas}$')
+ax6.fill_betweenx(zc,(1-phi+phi*S_w_analy_int)[:,0], facecolor=blue,label=r'$\phi_{water}$')
+ax6.fill_betweenx(zc,(1-phi)[:,0], facecolor=brown,label=r'$\phi_{soil}$')
+
+ax6new = ax6.twinx()
+ax6new.set_ylim([2,0])
+ax6new.set_ylabel(r"Dimensionless depth, $z/z_0$")
+
+ax1.set_yticklabels(z0_dim*(ax6.get_yticks()))
+ax1.set_ylabel(r"Depth, $z$ [m]")
+
+t_dim = (z0_dim /fc_dim * t_interest)/day2s
+ts_dim = (z0_dim /fc_dim * ts)/day2s 
+
+ax3.set_title(r"%.2f" "\n" r"%.1f" %(ts,ts_dim), fontsize='medium')
+ax5.set_title(r"%.2f" "\n" r"%.1f" %(t_interest[4],t_dim[4]), fontsize='medium')
+
+ax1.legend(loc='lower left', shadow=False, fontsize='medium')
+
+plt.xlabel("Volume fractions $\phi$", fontsize='medium')
+plt.savefig(f"../Figures/{simulation_name}_CL{theta_U}CR{theta_L}_phiL{phi_U}phiR{phi_L}.pdf")
+
+
+print("############################################################# \n")
 
 print("############################################################# \n")
 print("2 (bottom) Saturation with depth")
@@ -208,3 +343,73 @@ plt.xlim([np.min(T), np.max(T)])
 plt.ylim([0,round(np.max(QS),1)+0.1])
 plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=1.0)
 plt.savefig(f"../Figures/ICvsT_shock_{simulation_name}_CL{theta_U}CR{theta_L}_phiL{phi_U}phiR{phi_L}.pdf")
+
+
+
+
+
+
+
+fig = plt.figure(figsize=(8,8) , dpi=100)
+ax1 = fig.add_subplot(111)
+ax2 = ax1.twinx().twiny()
+ax2.plot(T,QS/f_Cm(np.array([phi_U]),m,phi_U),c='r')
+ax2.hlines(f_Cm(np.array([phi_L]),m,phi_U), np.min(T), np.max(T), colors=gray, linestyles='--')
+ax2.vlines(ts, 0, qs0[0]/f_Cm(np.array([phi_U]),m,phi_U), colors=gray, linestyles='--')
+ax2.vlines(tp, 0, qs0[0]/f_Cm(np.array([phi_U]),m,phi_U), colors=gray, linestyles='--')
+ax2.hlines(f_Cm(np.array([phi_L]),m,phi_U), np.min(T), np.max(T), colors=gray, linestyles='--')
+plt.xticks(fontsize='medium')
+plt.yticks(fontsize='medium')
+ax2.set_xlim([np.min(T), 2])
+ax2.set_ylim([0,round(np.max(QS),1)+0.1])
+
+def tick_function(X):
+    
+    V = (X * z0_dim / fc_dim)/day2s
+    return ["%.1f" % z for z in V]
+
+def ytick_function(Y):
+    
+    V = (Y * 1e6*fc_dim)
+    return ["%.1f" % z for z in V]
+
+ax1.set_xticklabels(tick_function(ax2.get_xticks()))
+ax1.set_xlabel(r"time, $t$ [days]")
+
+ax1.set_yticklabels(ytick_function(ax2.get_yticks()))
+ax1.set_ylabel(r"Infiltration rate, $I(t) \times 10^{6}$ [m/s]")
+
+ax1.set_xlim(np.array([np.min(T), 2]))
+ax1.set_ylim(np.array([0,round(np.max(QS),1)+0.1]))
+
+plt.tight_layout()#pad=0.4, w_pad=0.5, h_pad=1.0)
+ax2.set_ylabel(r"$I(t')/f_c$")
+ax2.set_xlabel(r"$t'$")
+
+plt.savefig(f"../Figures/newICvsT_shock_{simulation_name}_CL{theta_U}CR{theta_L}_phiL{phi_U}phiR{phi_L}.pdf")
+
+
+
+fc_dim= 1e-5 #infiltration capacity [m/s]
+z0_dim = 10 #dune depth [m]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
