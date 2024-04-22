@@ -160,9 +160,9 @@ figure
 contourf(-180+rad2deg(Yc),-90+rad2deg(Xc),diff_no_GW,50,'edgecolor','none'); %no GW - topo in m
 colorbar
 
-r = 3389.5; SA_Mars = 4.* pi.*r.^2; %radius of Mars [km]
-XXc_plus = Xc + (Xc(1,2)-Xc(1,1)); XXc_minus = Xc - (Xc(1,2)-Xc(1,1)); %longitude [radians]
-YYc_plus = Yc + (Yc(2,1)-Yc(1,1)); YYc_minus = Yc - (Yc(2,1)-Yc(1,1)); %latitude [radians]
+r = 3389.5; SA_Mars = 4.* pi.*r.^2; %radius  [km] and SA [km^2] of Mars
+XXc_plus = Xc + (Xc(1,2)-Xc(1,1))/2; XXc_minus = Xc - (Xc(1,2)-Xc(1,1))/2; %longitude [radians]
+YYc_plus = Yc + (Yc(2,1)-Yc(1,1))/2; YYc_minus = Yc - (Yc(2,1)-Yc(1,1))/2; %latitude [radians]
 Grid_area = pi * r.^2 .* (sin(XXc_plus) - sin(XXc_minus)).* (YYc_plus - YYc_minus); %area of the grid [m^2]
 Vol_GW = sum(Grid_area.*(-diff_new).*phi_top_surf/(p+1)*(1-s_gr-s_wr),'all'); GEL_GW = Vol_GW./SA_Mars %GEL without Groundwater table [m]
 Vol_no_GW = sum(Grid_area.*(-diff_no_GW).*phi_top_surf/(p+1)*(1-s_gr-s_wr),'all'); GEL_no_GW = Vol_no_GW./SA_Mars %GEL without Groundwater table [m]
