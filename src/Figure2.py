@@ -47,18 +47,18 @@ n = 2 #Corey-Brooks coefficient krw = krw0 * sw^n
 s_wr = 0.0 #Residual water saturation
 s_gr = 0.0 #Residual gas saturation
 phi_0 = 0.5#Porosity at the surface
-z0 = 0.06   #point specified for power law porosity variation
+z0 = 1#0.06   #point specified for power law porosity variation
 p  = 2.5422#index specified for power law porosity variation 
 R  = 1#qp/Ks #0.16  #dimensionless rainfall rates
 
 #spatial discretization
-zbottom = 0.06
+zbottom = 1.0
 Nz   = 1000
 zc   = np.linspace(0,zbottom,Nz) #depth array
 phi  = np.transpose([phi_0*(1-zc/z0)**p])#porosity vector: upper layer
 
 #temporal discretization
-tmax = 0.05   #time scaling with respect to z0/fc
+tmax = 1.0   #time scaling with respect to z0/fc
 Nt   = 20000 #time steps
 t = np.linspace(0,tmax,Nt+1) #time array
 
@@ -82,7 +82,7 @@ def rhs_stage3(t, y):
     return [ 0, qs(y[0],y[1])/(phi_0*(1-y[1]/z0)**p*(1-s_wr-s_gr))] 
 
 #time stamps of interest: [beginning, stage1, stage2: just after saturation (ts), stage2, stage2: ponding time (tp), stage3]
-t_interest = np.array([0,0.01, 0.02, 0.03, 0.04,0.05])
+t_interest = np.array([0,0.2, 0.4, 0.6, 0.8,1.0])
     
 zs = 0 #dimensionless depth of complete saturation
 ts = 0 #dimensionless time of saturation
@@ -188,7 +188,7 @@ S_w_analy_int[zc>=res.y[1,0]] = s_wr
 S_w_analy_int_combined = S_w_analy_int
 
 ax1new = ax1.twinx()
-ax1new.set_ylim([0.06,0.0])
+ax1new.set_ylim([1.0,0])
 
 ax1new.fill_betweenx(zc,1, facecolor=red,label=r'$\phi_{g}$')
 ax1new.fill_betweenx(zc,(1-phi+phi*S_w_analy_int)[:,0], facecolor=blue,label=r'$\phi_{w}$')
@@ -248,11 +248,12 @@ ax6.fill_betweenx(zc,(1-phi+phi*S_w_analy_int)[:,0], facecolor=blue,label=r'$\ph
 ax6.fill_betweenx(zc,(1-phi)[:,0], facecolor=brown,label=r'$\phi_{soil}$')
 
 ax6new = ax6.twinx()
-ax6new.set_ylim([0.06,0.0])
+ax6new.set_ylim([1.0,0])
 ax6new.set_ylabel(r"Dimensionless depth, $z/z_0$")
 
-ax1.set_yticklabels(z0_dim*(ax6.get_yticks()))
-ax1.set_ylabel(r"Depth, $z$ [m]")
+#ax1.set_yticklabels(z0_dim*(ax6.get_yticks())/1e3)
+ax1.set_yticklabels([0.0, 2.0, 4.0, 6.0, 8.0, 10.0])
+ax1.set_ylabel(r"Depth, $z$ [km]")
 
 t_dim = (z0_dim /fc_dim * t_interest)/yr2s
 
