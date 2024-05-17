@@ -102,7 +102,7 @@ nexttile
 contourf(-180+rad2deg(Yc),-90+rad2deg(Xc),zm2 - mars_topoplot,50,'edgecolor','none'); %GW - topo in m
 hold on
 shoreline = table2array(readtable('/Users/afzal-admin/Documents/Research/mars-project/Afzal/Infiltration/Infiltration/Mars-map/Shorelines.csv'));
-plot(shoreline(:,1),shoreline(:,2),'k.','MarkerSize',6);
+plot(shoreline(:,1),shoreline(:,2),'k.','MarkerSize',10);
 %plot(-90+rad2deg(Phi(Arabia)),-180+rad2deg(Theta(Arabia)),'k.','MarkerSize',10)
 yline(-45,'k--','Linewidth',3);
 yline(45,'k--','Linewidth',3);
@@ -115,13 +115,15 @@ colormap(flipud(turbo))
 nexttile
 contourf(-180+rad2deg(Yc),-90+rad2deg(Xc),log10(t_base/yr2s),50,'edgecolor','none'); %time in log of years
 hold on
-plot(shoreline(:,1),shoreline(:,2),'k.','MarkerSize',6);
+plot(shoreline(:,1),shoreline(:,2),'k.','MarkerSize',10);
 pbaspect([1.8 1 1])        
 colormap(flipud(turbo))
 caxis([1.5 3]);
 %set(gca,'ColorScale','log')
 c1 = colorbar()
-c1.Label.String = 'Infiltration time [log_{10}(years)]';
+c1.Label.String = 'Infiltration time [years]';
+c1.Ticks = [1.5,2,2.5,3];
+c1.TickLabels = compose('10^{%.1f}',c1.Ticks);
 ylabel('Latitude [$$^\textrm{o}$$]');
 
 nexttile
@@ -130,10 +132,12 @@ pbaspect([1.8 1 1])
 colormap(flipud(turbo))
 caxis([1.5 3]);
 hold on
-plot(shoreline(:,1),shoreline(:,2),'k.','MarkerSize',6);
+plot(shoreline(:,1),shoreline(:,2),'k.','MarkerSize',10);
 %set(gca,'ColorScale','log')
 c2 = colorbar()
-c2.Label.String = 'Infiltration time [log_{10}(years)]';
+c2.Label.String = 'Infiltration time [years]';
+c2.Ticks = [1.5,2,2.5,3];
+c2.TickLabels = compose('10^{%.1f}',c2.Ticks);
 ylabel('Latitude [$$^\textrm{o}$$]');
 xlabel('Longitude [$$^\textrm{o}$$]');
 set(gcf,'PaperType','A4')
@@ -142,7 +146,7 @@ print(hh,'-painters','-opengl', '-r1000','../Figures/Figure3.pdf','-dpdf','-fill
 
 
 %GEL calculation
-GEL_angle = 45; %Band angle degrees
+GEL_angle = 90; %Band angle degrees
 diff_new = zm2 - mars_topoplot;
 diff_new(diff_new>0)= 0;
 diff_new(isnan(diff_new)) = 0;
