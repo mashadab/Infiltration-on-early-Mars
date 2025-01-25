@@ -90,61 +90,6 @@ t_inf_vertical_var = (1-Ratio.^(((-m*p + n*p + n))/n)).*(n/(-m*p + n*p + n)).*ph
 t_inf_vertical_var(isinf(t_inf_vertical_var)) = nan;
 
 
-%New calculation plot
-
-hh= figure('Position', [1, 1, 500, 800]);
-h = tiledlayout(3,1, 'TileSpacing', 'none', 'Padding', 'none');
-nexttile
-%contourf(Yc,Xc,zm_subtract); %Plotting subtracted topo; Yc is longitude, Xc is latitute
-%Calculate ponding time everywhere
-%zm_subtract
-
-contourf(-180+rad2deg(Yc),-90+rad2deg(Xc),zm2 - mars_topoplot,50,'edgecolor','none'); %GW - topo in m
-hold on
-shoreline = table2array(readtable('/Users/afzal-admin/Documents/Research/mars-project/Afzal/Infiltration/Infiltration/Mars-map/Shorelines.csv'));
-plot(shoreline(:,1),shoreline(:,2),'k.','MarkerSize',10);
-%plot(-90+rad2deg(Phi(Arabia)),-180+rad2deg(Theta(Arabia)),'k.','MarkerSize',10)
-yline(-45,'k--','Linewidth',3);
-yline(45,'k--','Linewidth',3);
-pbaspect([1.8 1 1])
-%set(gca,'ColorScale','log')
-ylabel('Latitude [$$^\textrm{o}$$]');
-c1 = colorbar()
-c1.Label.String = 'G.W. - Topo. elev. [m]';
-colormap(flipud(turbo))
-nexttile
-contourf(-180+rad2deg(Yc),-90+rad2deg(Xc),log10(t_base/yr2s),50,'edgecolor','none'); %time in log of years
-hold on
-plot(shoreline(:,1),shoreline(:,2),'k.','MarkerSize',10);
-pbaspect([1.8 1 1])        
-colormap(flipud(turbo))
-caxis([1.5 3]);
-%set(gca,'ColorScale','log')
-c1 = colorbar()
-c1.Label.String = 'Infiltration time [years]';
-c1.Ticks = [1.5,2,2.5,3];
-c1.TickLabels = compose('10^{%.1f}',c1.Ticks);
-ylabel('Latitude [$$^\textrm{o}$$]');
-
-nexttile
-contourf(-180+rad2deg(Yc),-90+rad2deg(Xc),log10(t_inf_vertical_var/yr2s),50,'edgecolor','none'); %time in log of years
-pbaspect([1.8 1 1])        
-colormap(flipud(turbo))
-caxis([1.5 3]);
-hold on
-plot(shoreline(:,1),shoreline(:,2),'k.','MarkerSize',10);
-%set(gca,'ColorScale','log')
-c2 = colorbar()
-c2.Label.String = 'Infiltration time [years]';
-c2.Ticks = [1.5,2,2.5,3];
-c2.TickLabels = compose('10^{%.1f}',c2.Ticks);
-ylabel('Latitude [$$^\textrm{o}$$]');
-xlabel('Longitude [$$^\textrm{o}$$]');
-set(gcf,'PaperType','A4')
-saveas(h,'./res_fig_final.pdf');
-print(hh,'-painters','-opengl', '-r1000','../Figures/Figure3.pdf','-dpdf','-fillpage');
-
-
 %GEL calculation
 GEL_angle = 90; %Band angle degrees
 diff_new = zm2 - mars_topoplot;
@@ -170,3 +115,114 @@ YYc_plus = Yc + (Yc(2,1)-Yc(1,1))/2; YYc_minus = Yc - (Yc(2,1)-Yc(1,1))/2; %lati
 Grid_area = pi * r.^2 .* (sin(XXc_plus) - sin(XXc_minus)).* (YYc_plus - YYc_minus); %area of the grid [m^2]
 Vol_GW = sum(Grid_area.*(-diff_new).*phi_top_surf/(p+1)*(1-s_gr-s_wr),'all'); GEL_GW = Vol_GW./SA_Mars %GEL without Groundwater table [m]
 Vol_no_GW = sum(Grid_area.*(-diff_no_GW).*phi_top_surf/(p+1)*(1-s_gr-s_wr),'all'); GEL_no_GW = Vol_no_GW./SA_Mars %GEL without Groundwater table [m]
+
+
+%Integral for the infiltration time function
+Int_fun = @(x) arrayfun(@(x_) integral(@(X) ((1 - X).^(p + 1 - m * p) - (1- X).^p)./X, 0, x_) , x);
+Int = Int_fun(Ratio);
+
+%Ratio
+hh= figure('Position', [1, 1, 500, 800]);
+h = tiledlayout(3,1, 'TileSpacing', 'none', 'Padding', 'none');
+
+nexttile
+
+contourf(-180+rad2deg(Yc),-90+rad2deg(Xc),Ratio,50,'edgecolor','none'); %GW - topo in m
+hold on
+shoreline = table2array(readtable('./Data/Shorelines.csv'));
+plot(shoreline(:,1),shoreline(:,2),'k.','MarkerSize',10);
+yline(-45,'k--','Linewidth',3);
+yline(45,'k--','Linewidth',3);
+pbaspect([1.8 1 1])
+ylabel('Latitude [$$^\textrm{o}$$]');
+c1 = colorbar()
+c1.Label.String = '$$\frac{z_{\textrm{surf}}-z_{\textrm{GW}}}{z_{\textrm{surf}}-z_{\textrm{base}}}$$';
+c1.Label.Interpreter = 'latex';
+colormap(flipud(turbo))
+ylabel('Latitude [$$^\textrm{o}$$]');
+xlabel('Longitude [$$^\textrm{o}$$]');
+
+nexttile
+h1 = histogram(Ratio,'FaceColor',[101	67	33]./255); 
+h1.BinWidth = 0.05;
+h1.Normalization = 'probability';
+pbaspect([1.8 1 1])        
+hold on
+ylabel('Fraction of occurences')
+xlabel('$$({z_{\textrm{surf}}-z_{\textrm{GW}}})/({z_{\textrm{surf}}-z_{\textrm{base}}})$$')
+
+nexttile
+semilogy(linspace(0.001,0.9,10000),(m*p+1)*linspace(0.001,0.9,10000).*phi_top_surf/(p+1).*(1-s_wr-s_gr),color='blue');
+hold on
+semilogy(linspace(0.001,0.9,10000),Int_fun(linspace(0.001,0.9,10000)).*phi_top_surf.*(1-s_wr-s_gr)/((m*p-1)),color='black');
+lgd=legend('Homogeneous','Heterogeneous');
+lgd.Location = 'northwest';
+pbaspect([1.8 1 1])        
+caxis([1 3]);
+ylim([1e-2 1e2])
+yticks([1e-2, 1e-1, 1e0, 1e1, 1e2]);
+hold on
+%set(gca,'ColorScale','log')
+ylabel('$$t \times f_c/ ({z_{\textrm{surf}}-z_{\textrm{base}}})$$')
+xlabel('$$({z_{\textrm{surf}}-z_{\textrm{GW}}})/({z_{\textrm{surf}}-z_{\textrm{base}}})$$')
+
+set(gcf,'PaperType','A4')
+saveas(h,'./res_fig_final.pdf');
+print(hh,'../Figures/S3_Ratio.pdf','-dpdf');
+
+
+
+%New calculation plot
+
+hh= figure('Position', [1, 1, 500, 800]);
+h = tiledlayout(3,1, 'TileSpacing', 'none', 'Padding', 'none');
+nexttile
+t_inf_vertical_var_new = Int.*phi_top_surf.*z0_calc.*(1-s_wr-s_gr)/(fc_basalt*(m*p-1));
+topo_naned =  mars_topoplot - zm2; topo_naned(isnan(t_inf_vertical_var_new)==1) = nan;
+contourf(-180+rad2deg(Yc),-90+rad2deg(Xc),topo_naned,50,'edgecolor','none'); %GW - topo in m
+hold on
+shoreline = table2array(readtable('./Data/Shorelines.csv'));
+plot(shoreline(:,1),shoreline(:,2),'k.','MarkerSize',10);
+
+%plot(-90+rad2deg(Phi(Arabia)),-180+rad2deg(Theta(Arabia)),'k.','MarkerSize',10)
+yline(-45,'k--','Linewidth',3);
+yline(45,'k--','Linewidth',3);
+pbaspect([1.8 1 1])
+%set(gca,'ColorScale','log')
+ylabel('Latitude [$$^\textrm{o}$$]');
+c1 = colorbar()
+caxis([0 9000]);
+c1.Label.String = 'Topo. - G.W. elevation [km]';
+c1.Ticks = linspace(0,9000,10);
+c1.TickLabels = compose('{%.0f}',c1.Ticks/1e3);
+colormap(flipud(turbo))
+nexttile
+contourf(-180+rad2deg(Yc),-90+rad2deg(Xc),(t_base/yr2s),50,'edgecolor','none'); %time in log of years
+hold on
+plot(shoreline(:,1),shoreline(:,2),'k.','MarkerSize',10);
+pbaspect([1.8 1 1])        
+colormap(flipud(turbo))
+caxis([0 200]);
+c1 = colorbar()
+c1.Label.String = 'Infiltration time [years]';
+c1.Ticks = [0, 50, 100, 150, 200];
+c1.TickLabels = {'0', '50', '100', '150', '>200'};
+ylabel('Latitude [$$^\textrm{o}$$]');
+
+nexttile
+contourf(-180+rad2deg(Yc),-90+rad2deg(Xc),(t_inf_vertical_var_new/yr2s),50,'edgecolor','none'); %time in log of years
+pbaspect([1.8 1 1])        
+colormap(flipud(turbo))
+caxis([0 200]);
+hold on
+plot(shoreline(:,1),shoreline(:,2),'k.','MarkerSize',10);
+%set(gca,'ColorScale','log')
+c2 = colorbar()
+c2.Label.String = 'Infiltration time [years]';
+c2.Ticks = [0, 50, 100, 150, 200];
+c2.TickLabels = {'0', '50', '100', '150', '>200'};
+ylabel('Latitude [$$^\textrm{o}$$]');
+xlabel('Longitude [$$^\textrm{o}$$]');
+set(gcf,'PaperType','A4')
+saveas(h,'./res_fig_final.pdf');
+print(hh,'-painters','-opengl', '-r1000','../Figures/Figure3_new.pdf','-dpdf','-fillpage');
