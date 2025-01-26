@@ -103,7 +103,7 @@ plot(I_v(end)/phi_avg*ones(1000,1),z/1e3,'r-',linewidth=4); %homo
 hold on
 plot(I_h./phi_array,z/1e3,'b-',linewidth=4); %hetero
 set(gca, 'YDir','reverse')
-xlabel('$dz/dt$ [-]','Interpreter','latex')
+xlabel('$dz`/dt`$ [-]','Interpreter','latex')
 ylabel('Depth, $z$ [km]','Interpreter','latex')
 legend('Arithmetic mean', 'Harmonic mean','Average','Location','southeast','color','none','FontSize',20,'Interpreter','latex')
 print(fig2d,'arithmetic_vs_harmonic_shock_speed.pdf','-dpdf','-r0')
