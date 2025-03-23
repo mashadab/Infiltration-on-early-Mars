@@ -226,3 +226,19 @@ xlabel('Longitude [$$^\textrm{o}$$]');
 set(gcf,'PaperType','A4')
 saveas(h,'./res_fig_final.pdf');
 print(hh,'-painters','-opengl', '-r1000','../Figures/Figure3_new.pdf','-dpdf','-fillpage');
+
+
+%Calculating figures from the plot
+%Homogenous
+X = t_base/yr2s;
+X = X(:);
+X = rmmissing(X);
+mean(X)
+std(X)
+
+%Vert variation
+X = t_inf_vertical_var_new/yr2s;
+X = X(:);
+X = rmmissing(X);
+mean(X)
+std(X)
