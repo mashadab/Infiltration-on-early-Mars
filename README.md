@@ -18,7 +18,12 @@ The codes provide the analytical solutions for infiltration in soils with two-la
 <p align="center">
 <img src="./Figures/Cover.png" height="370">
 </p>
-Figures: (a-f) Infiltration in double-textured soil due to excess supply of water. (g) Evolution of dimensionless infiltration rate I/fc (or transmission loss). The volume fraction `φ_α` is the volume ratio of each phase α: gas (g), water (w), and soil (s).
+Figures: (a-f) Infiltration in double-textured soil due to excess supply of water. (g) Evolution of dimensionless infiltration rate I/fc (or transmission loss). The volume fraction `φ_α` is the volume ratio of each phase α: gas (g), water (w), and regolith (s).
+
+<p align="center">
+<img src="./Figures/Cover_Mars.png" height="370">
+</p>
+Figures: Infiltration on early Mars. (a) Difference between topography and groundwater table elevation. (b) Infiltration time contour: Time to reach the water table in a homogeneous crust (megaregolith).
 
 
 ## Citation
